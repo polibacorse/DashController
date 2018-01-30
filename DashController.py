@@ -25,9 +25,9 @@ GearValue = 0
 def on_message(client, userdata, message):
    
     ##print(message.topic,"says: ",str(message.payload.decode("utf-8")))
-    mylist=str(message.payload.decode("utf-8")).split(':')
+    rawMessage=str(message.payload.decode("utf-8")).split(':')
     global GearValue
-    stringa =list(mylist[2])
+    stringa =list(rawMessage[2])
     if GearValue!=int(stringa[0]):
    	 GearValue = int(stringa[0])
    	 tempGearValue = GearValue
@@ -71,7 +71,7 @@ client.connect(broker_address) #connect to broker
 ##########################################SUBSCRIPTIONS
 
 #to subscribe just type:
-#client.subscribe("$SYS/formatted/ <formatted data Channel-name> ")
+#client.subscribe("data/formatted/ <formatted data Channel-name> ")
 
 
 client.subscribe("data/formatted/gear") #subscribing to Gear Channel
@@ -85,11 +85,13 @@ client.subscribe("data/formatted/telemetria_on-off")
 client.loop_start()
 
 while True:
-
+        ##reading switches states
 	debugFlag = GPIO.input(5)
 	telemetryFlag = GPIO.input(6)
 	accellerationModeFlag = GPIO.input(26)
 	dataLoggerFlag = GPIO.input(16)
+
+	##printing and publishing switches states
 	print("debug: ",debugFlag)
 	print("telemetry: ",telemetryFlag)
 	print("accellerationMode: ",accellerationModeFlag)
