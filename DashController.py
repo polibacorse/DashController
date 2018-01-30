@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt #import the client1
 import time
 import RPi.GPIO as GPIO
-###SETTING UP GPIOs
+###SETTING UP GPIOs 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(23, GPIO.OUT)
@@ -62,19 +62,25 @@ broker_address="localhost"
 
 print("creating new instance")
 
-client = mqtt.Client("GearReader") 
+client = mqtt.Client("DashController") 
 client.on_message=on_message #attach function to callback
 
 print("connecting to broker")
 client.connect(broker_address) #connect to broker
-##client.loop_start() #start the loop
-##SUBSCRIPTIONS
+
+##########################################SUBSCRIPTIONS
 
 #to subscribe just type:
 #client.subscribe("$SYS/formatted/ <formatted data Channel-name> ")
 
-print("Subscribing to topic","formatted/gear")
+
 client.subscribe("data/formatted/gear") #subscribing to Gear Channel
+client.subscribe("data/formatted/auto_acc_flag")
+client.subscribe("data/formatted/debug_mode")
+client.subscribe("data/formatted/datalog_on-off")
+client.subscribe("data/formatted/telemetria_on-off")
+
+
 
 client.loop_start()
 
@@ -88,6 +94,11 @@ while True:
 	print("telemetry: ",telemetryFlag)
 	print("accellerationMode: ",accellerationModeFlag)
 	print("dataLogger: ",dataLoggerFlag)
+	
+	client.publish("data/formatted/auto_acc_flag",accellerationModeFlag)
+	client.publish("data/formatted/debug_mode", debugFlag)
+	client.publish("data/formatted/datalog_on-off", dataLoggerFlag)
+	client.publish("data/formatted/telemetria_on-off", telemetryFlag)
 
 	
 
