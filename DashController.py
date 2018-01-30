@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt #import the client1
 import time
 import RPi.GPIO as GPIO
+###SETTING UP GPIOs
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(23, GPIO.OUT)
