@@ -20,9 +20,9 @@ GearValue = 0
 def dec2binary(dec): ##function used to convert decimal numbers to binary numbers
 
     index = 0
-    revBinary = list()
+    revBinary = [0,0,0,0]
     while dec >= 1:
-        revBinary.append(dec%2)
+        revBinary[index]=(dec%2)
         dec = int(dec/2)
         index = index + 1
 
@@ -44,7 +44,7 @@ def on_message(client, userdata, message):
     
     if GearValue!=int(stringa[0]):
         GearValue = int(stringa[0])
-        binary = dec2bin(GearValue)
+        binary = dec2binary(GearValue)
         GPIOstateList = list( reversed(binary))
         print(binary)
         ##updating GPIO state
@@ -84,7 +84,7 @@ client.subscribe("data/formatted/telemetria_on-off")
 
 
 
-client.loop_start()
+client.loop_forever()
 
 while True:
         ##reading switches states
