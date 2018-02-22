@@ -17,39 +17,41 @@ GearValue = 0
 
 
 
+def dec2binary(dec): ##function used to convert decimal numbers to binary numbers
+
+    index = 0
+    revBinary = [0,0,0,0]
+    while dec >= 1:
+        revBinary[index]=(dec%2)
+        dec = int(dec/2)
+        index = index + 1
+
+    binary = list(reversed(revBinary))
+    return(binary)
 
 
 
-############ Printing Received Data Function
+############ function used when messages are received
 
 def on_message(client, userdata, message):
    
     ##print(message.topic,"says: ",str(message.payload.decode("utf-8")))
+    
+    #############processing message to collect GearValue
     rawMessage=str(message.payload.decode("utf-8")).split(':')
     global GearValue
     stringa =list(rawMessage[2])
+    
     if GearValue!=int(stringa[0]):
-   	 GearValue = int(stringa[0])
-   	 tempGearValue = GearValue
-   	 index = 0;
-   	 lista = [0,0,0,0]
-   	 while tempGearValue>=1:
-   		 lista[index]= tempGearValue%2
-    		 tempGearValue = int(tempGearValue/2)
-       		 index = index + 1
-    ###################################
-   	 revlista = list(reversed(lista))
-   	 print(revlista)
-    ###################################
-   	 bcdPin0 = lista[0]
-    	 bcdPin1 = lista[1]
-    	 bcdPin2 = lista[2]
-    	 bcdPin3 = lista[3]
-
-    	 GPIO.output(23,bcdPin0)
-    	 GPIO.output(17,bcdPin1)
-    	 GPIO.output(27,bcdPin2)       
-    	 GPIO.output(22,bcdPin3)
+        GearValue = int(stringa[0])
+        binary = dec2binary(GearValue)
+        GPIOstateList = list( reversed(binary))
+        print(binary)
+        ##updating GPIO state
+        GPIO.output(23, GPIOstateList[0])
+        GPIO.output(17, GPIOstateList[1])
+        GPIO.output(27, GPIOstateList[2])       
+        GPIO.output(22, GPIOstateList[3])
 	
     
     
@@ -82,7 +84,7 @@ client.subscribe("data/formatted/telemetria_on-off")
 
 
 
-client.loop_start()
+client.loop_forever()
 
 while True:
         ##reading switches states
@@ -103,4 +105,3 @@ while True:
 	client.publish("data/formatted/telemetria_on-off", telemetryFlag)
 
 	
-
