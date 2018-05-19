@@ -100,7 +100,10 @@ client.subscribe("data/formatted/datalog_on-off")
 client.subscribe("data/formatted/telemetria_on-off")
 
 
+GPIO.add_event_detect(5, GPIO.BOTH,callback=buttonInterrupt,bouncetime=300);
+GPIO.add_event_detect(6, GPIO.BOTH,callback=buttonInterrupt,bouncetime=300);
 GPIO.add_event_detect(26, GPIO.BOTH,callback=buttonInterrupt,bouncetime=300);
+GPIO.add_event_detect(16, GPIO.BOTH,callback=buttonInterrupt,bouncetime=300);
 client.loop_forever();
 
 while True:
