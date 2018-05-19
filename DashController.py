@@ -16,6 +16,22 @@ global GearValue
 GearValue = 0
 
 
+def buttonInterrupt(channel):
+    debugFlag = GPIO.input(5)
+    telemetryFlag = GPIO.input(6)
+    accellerationModeFlag = GPIO.input(26)
+    dataLoggerFlag = GPIO.input(16)
+
+   ##printing and publishing switches states
+    print("debug: ",debugFlag)
+    print("telemetry: ",telemetryFlag)
+    print("accellerationMode: ",accellerationModeFlag)
+    print("dataLogger: ",dataLoggerFlag)
+    client.publish("data/formatted/auto_acc_flag",accellerationModeFlag)
+    client.publish("data/formatted/debug_mode", debugFlag)
+    client.publish("data/formatted/datalog_on-off", dataLoggerFlag)
+    client.publish("data/formatted/telemetria_on-off", telemetryFlag)
+
 
 def dec2binary(dec): ##function used to convert decimal numbers to binary numbers
 
@@ -36,24 +52,25 @@ def dec2binary(dec): ##function used to convert decimal numbers to binary number
 def on_message(client, userdata, message):
    
     ##print(message.topic,"says: ",str(message.payload.decode("utf-8")))
-    
+    try:
     #############processing message to collect GearValue
-    rawMessage=str(message.payload.decode("utf-8")).split(':')
-    global GearValue
-    stringa =list(rawMessage[2])
+    	rawMessage=str(message.payload.decode("utf-8")).split(':')
+    	global GearValue
+    	stringa =list(rawMessage[2])
     
-    if GearValue!=int(stringa[0]):
-        GearValue = int(stringa[0])
-        binary = dec2binary(GearValue)
-        GPIOstateList = list( reversed(binary))
-        print(binary)
+    	if GearValue!=int(stringa[0]):
+        	GearValue = int(stringa[0])
+        	binary = dec2binary(GearValue)
+        	GPIOstateList = list( reversed(binary))
+        	print(binary)
         ##updating GPIO state
-        GPIO.output(23, GPIOstateList[0])
-        GPIO.output(17, GPIOstateList[1])
-        GPIO.output(27, GPIOstateList[2])       
-        GPIO.output(22, GPIOstateList[3])
+        	GPIO.output(23, GPIOstateList[0])
+        	GPIO.output(17, GPIOstateList[1])
+        	GPIO.output(27, GPIOstateList[2])       
+        	GPIO.output(22, GPIOstateList[3])
 	
-    
+    except:
+	print("error")
     
 
     
@@ -83,25 +100,11 @@ client.subscribe("data/formatted/datalog_on-off")
 client.subscribe("data/formatted/telemetria_on-off")
 
 
-
-client.loop_forever()
+GPIO.add_event_detect(26, GPIO.BOTH,callback=buttonInterrupt,bouncetime=300);
+client.loop_forever();
 
 while True:
-        ##reading switches states
-	debugFlag = GPIO.input(5)
-	telemetryFlag = GPIO.input(6)
-	accellerationModeFlag = GPIO.input(26)
-	dataLoggerFlag = GPIO.input(16)
-
-	##printing and publishing switches states
-	print("debug: ",debugFlag)
-	print("telemetry: ",telemetryFlag)
-	print("accellerationMode: ",accellerationModeFlag)
-	print("dataLogger: ",dataLoggerFlag)
 	
-	client.publish("data/formatted/auto_acc_flag",accellerationModeFlag)
-	client.publish("data/formatted/debug_mode", debugFlag)
-	client.publish("data/formatted/datalog_on-off", dataLoggerFlag)
-	client.publish("data/formatted/telemetria_on-off", telemetryFlag)
+    buttonInterrupt();
 
 	
