@@ -12,10 +12,12 @@ GPIO.setup(5, GPIO.IN)
 GPIO.setup(6, GPIO.IN)
 GPIO.setup(26, GPIO.IN)
 GPIO.setup(16, GPIO.IN)
+## after testing we have to decide if it's ok not to use strobe pin or not
+
 global GearValue
 GearValue = 0
 
-
+## function that reads buttons states
 def buttonInterrupt(channel):
     debugFlag = GPIO.input(5)
     telemetryFlag = GPIO.input(6)
@@ -47,7 +49,7 @@ def dec2binary(dec): ##function used to convert decimal numbers to binary number
 
 
 
-############ function used when messages are received
+############ function called when messages are received
 
 def on_message(client, userdata, message):
    
@@ -99,11 +101,13 @@ client.subscribe("data/formatted/debug_mode")
 client.subscribe("data/formatted/datalog_on-off")
 client.subscribe("data/formatted/telemetria_on-off")
 
-
+##attaching interrupt functions
 GPIO.add_event_detect(5, GPIO.BOTH,callback=buttonInterrupt,bouncetime=300);
 GPIO.add_event_detect(6, GPIO.BOTH,callback=buttonInterrupt,bouncetime=300);
 GPIO.add_event_detect(26, GPIO.BOTH,callback=buttonInterrupt,bouncetime=300);
 GPIO.add_event_detect(16, GPIO.BOTH,callback=buttonInterrupt,bouncetime=300);
+###################
+
 client.loop_forever();
 
 while True:
