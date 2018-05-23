@@ -1,3 +1,5 @@
+#!/bin/env python3
+
 import paho.mqtt.client as mqtt #import the client1
 import time
 import RPi.GPIO as GPIO
