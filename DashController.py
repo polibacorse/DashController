@@ -1,6 +1,6 @@
 #!/bin/env python3
 
-import paho.mqtt.client as mqtt # import the client1
+import paho.mqtt.client as mqtt  # import the client1
 
 import RPi.GPIO as GPIO
 
@@ -10,6 +10,7 @@ debugSwitchPin = 5
 telemetrySwitchPin = 6
 accelerationModeSwitchPin = 26
 dataLoggerSwitchPin = 16
+lapEndButton = 10
 BCD0Pin = 23
 BCD1Pin = 17
 BCD2Pin = 27
@@ -29,28 +30,40 @@ GPIO.setup(debugSwitchPin, GPIO.IN)
 GPIO.setup(telemetrySwitchPin, GPIO.IN)
 GPIO.setup(accelerationModeSwitchPin, GPIO.IN)
 GPIO.setup(dataLoggerSwitchPin, GPIO.IN)
+GPIO.setup(lapEndButton, GPIO.IN)
 # after testing we have to decide if it's ok not to use strobe pin or not
 
 global GearValue
 GearValue = 0
+global LapNumber
+LapNumber = 0
 
 
 # function that reads buttons states
 def buttonInterrupt(self):
-    debugFlag = GPIO.input(debugSwitchPin)
-    telemetryFlag = GPIO.input(telemetrySwitchPin)
-    accelerationModeFlag = GPIO.input(accelerationModeSwitchPin)
-    dataLoggerFlag = GPIO.input(dataLoggerSwitchPin)
+    debugFlag = not GPIO.input(debugSwitchPin)
+    telemetryFlag = not GPIO.input(telemetrySwitchPin)
+    accelerationModeFlag = not GPIO.input(accelerationModeSwitchPin)
+    dataLoggerFlag = not GPIO.input(dataLoggerSwitchPin)
 
     # printing and publishing switches states
-    print("debug: ",debugFlag)
-    print("telemetry: ",telemetryFlag)
-    print("accellerationMode: ",accelerationModeFlag)
-    print("dataLogger: ",dataLoggerFlag)
-    client.publish("data/formatted/auto_acc_flag",accelerationModeFlag)
+
+    client.publish("data/formatted/auto_acc_flag", accelerationModeFlag)
     client.publish("data/formatted/debug_mode", debugFlag)
     client.publish("data/formatted/datalog_on-off", dataLoggerFlag)
     client.publish("data/formatted/telemetria_on-off", telemetryFlag)
+    print("debug: ", debugFlag)
+    print("telemetry: ", telemetryFlag)
+    print("accellerationMode: ", accelerationModeFlag)
+    print("dataLogger: ", dataLoggerFlag)
+
+
+# function that increments lap number when lap button is pressed
+def lapEndButtonInterrupt(self):
+    global LapNumber
+    LapNumber += 1
+    client.publish("data/formatted/lapnumber", LapNumber)
+    print("lapNumber: ", LapNumber)
 
 
 def dec2binary(dec):  # function used to convert decimal numbers to binary numbers
@@ -113,16 +126,19 @@ client.connect(broker_address) # connect to broker
 
 
 client.subscribe("data/formatted/gear") # subscribing to Gear Channel
-client.subscribe("data/formatted/auto_acc_flag")
-client.subscribe("data/formatted/debug_mode")
-client.subscribe("data/formatted/datalog_on-off")
-client.subscribe("data/formatted/telemetria_on-off")
+# client.subscribe("data/formatted/auto_acc_flag")
+# client.subscribe("data/formatted/debug_mode")
+# client.subscribe("data/formatted/datalog_on-off")
+# client.subscribe("data/formatted/telemetria_on-off")
+# client.subscribe("data/formatted/lapnumber")
+client.publish("data/formatted/lapnumber", LapNumber)
 
 # attaching interrupt functions
-GPIO.add_event_detect(debugSwitchPin, GPIO.BOTH, callback=buttonInterrupt, bouncetime=300)
-GPIO.add_event_detect(telemetrySwitchPin, GPIO.BOTH, callback=buttonInterrupt, bouncetime=300)
-GPIO.add_event_detect(accelerationModeSwitchPin, GPIO.BOTH, callback=buttonInterrupt, bouncetime=300)
-GPIO.add_event_detect(dataLoggerSwitchPin, GPIO.BOTH, callback=buttonInterrupt, bouncetime=300)
+GPIO.add_event_detect(debugSwitchPin, GPIO.BOTH, callback=buttonInterrupt, bouncetime=1)
+GPIO.add_event_detect(telemetrySwitchPin, GPIO.BOTH, callback=buttonInterrupt, bouncetime=1)
+GPIO.add_event_detect(accelerationModeSwitchPin, GPIO.BOTH, callback=buttonInterrupt, bouncetime=1)
+GPIO.add_event_detect(dataLoggerSwitchPin, GPIO.BOTH, callback=buttonInterrupt, bouncetime=1)
+GPIO.add_event_detect(lapEndButton, GPIO.FALLING, callback=lapEndButtonInterrupt, bouncetime=5000)
 ###################
 
 client.loop_forever()
