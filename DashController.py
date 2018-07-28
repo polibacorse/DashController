@@ -52,10 +52,10 @@ def buttonInterrupt(self):
     client.publish("data/formatted/debug_mode", debugFlag)
     client.publish("data/formatted/datalog_on-off", dataLoggerFlag)
     client.publish("data/formatted/telemetria_on-off", telemetryFlag)
-    print("debug: ", debugFlag)
-    print("telemetry: ", telemetryFlag)
-    print("accellerationMode: ", accelerationModeFlag)
-    print("dataLogger: ", dataLoggerFlag)
+    # print("debug: ", debugFlag)
+    # print("telemetry: ", telemetryFlag)
+    # print("accellerationMode: ", accelerationModeFlag)
+    # print("dataLogger: ", dataLoggerFlag)
 
 
 # function that increments lap number when lap button is pressed
@@ -63,7 +63,7 @@ def lapEndButtonInterrupt(self):
     global LapNumber
     LapNumber += 1
     client.publish("data/formatted/lapnumber", LapNumber)
-    print("lapNumber: ", LapNumber)
+    # print("lapNumber: ", LapNumber)
 
 
 def dec2binary(dec):  # function used to convert decimal numbers to binary numbers
@@ -94,7 +94,7 @@ def on_message(client, userdata, message):
             GearValue = int(stringa[0])
             binary = dec2binary(GearValue)
             GPIOstateList = list(reversed(binary))   # generating a list that contains the future state that the BCDpins will have to assume
-            print(binary)
+            # print(binary)
             # updating GPIO state
             GPIO.output(LE_Strobe_Pin, 0)
             GPIO.output(BCD0Pin, GPIOstateList[0])
