@@ -31,7 +31,7 @@ GPIO.setup(telemetrySwitchPin, GPIO.IN)
 GPIO.setup(accelerationModeSwitchPin, GPIO.IN)
 GPIO.setup(dataLoggerSwitchPin, GPIO.IN)
 GPIO.setup(lapEndButton, GPIO.IN)
-# after testing we have to decide if it's ok not to use strobe pin or not
+
 
 global GearValue
 GearValue = 0
@@ -85,23 +85,24 @@ def on_message(client, userdata, message):
 
     # print(message.topic,"says: ",str(message.payload.decode("utf-8")))
     try:
-        # processing message to collect GearValue
-        rawMessage = str(message.payload.decode("utf-8")).split(':')
-        global GearValue
-        stringa = list(rawMessage[2])
+        if message.topic == "data/formatted/gear":
+            # processing message to collect GearValue
+            rawMessage = str(message.payload.decode("utf-8")).split(':')
+            global GearValue
+            stringa = list(rawMessage[2])
     
-        if GearValue != int(stringa[0]):
-            GearValue = int(stringa[0])
-            binary = dec2binary(GearValue)
-            GPIOstateList = list(reversed(binary))   # generating a list that contains the future state that the BCDpins will have to assume
-            # print(binary)
-            # updating GPIO state
-            GPIO.output(LE_Strobe_Pin, 0)
-            GPIO.output(BCD0Pin, GPIOstateList[0])
-            GPIO.output(BCD1Pin, GPIOstateList[1])
-            GPIO.output(BCD2Pin, GPIOstateList[2])
-            GPIO.output(BCD3Pin, GPIOstateList[3])
-            GPIO.output(LE_Strobe_Pin, 1)
+            if GearValue != int(stringa[0]):
+                GearValue = int(stringa[0])
+                binary = dec2binary(GearValue)
+                GPIOstateList = list(reversed(binary))   # generating a list that contains the future state that the BCDpins will have to assume
+                # print(binary)
+                # updating GPIO state
+                GPIO.output(LE_Strobe_Pin, 0)
+                GPIO.output(BCD0Pin, GPIOstateList[0])
+                GPIO.output(BCD1Pin, GPIOstateList[1])
+                GPIO.output(BCD2Pin, GPIOstateList[2])
+                GPIO.output(BCD3Pin, GPIOstateList[3])
+                GPIO.output(LE_Strobe_Pin, 1)
 
     except:
         print("error")
@@ -109,15 +110,15 @@ def on_message(client, userdata, message):
 
 ########################################
     
-broker_address="localhost" 
+broker_address = "localhost"
 
 print("creating new instance")
 
 client = mqtt.Client("DashController") 
-client.on_message=on_message # attach function to callback
+client.on_message = on_message  # attach function to callback
 
 print("connecting to broker")
-client.connect(broker_address) # connect to broker
+client.connect(broker_address)  # connect to broker
 
 # SUBSCRIPTIONS
 
@@ -125,7 +126,7 @@ client.connect(broker_address) # connect to broker
 # client.subscribe("data/formatted/ <formatted data Channel-name> ")
 
 
-client.subscribe("data/formatted/gear") # subscribing to Gear Channel
+client.subscribe("data/formatted/gear")  # subscribing to Gear Channel
 # client.subscribe("data/formatted/auto_acc_flag")
 # client.subscribe("data/formatted/debug_mode")
 # client.subscribe("data/formatted/datalog_on-off")
