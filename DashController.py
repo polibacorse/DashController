@@ -1,5 +1,6 @@
 #!/bin/env python3
 
+import json
 import paho.mqtt.client as mqtt  # import the client1
 
 import RPi.GPIO as GPIO
@@ -87,12 +88,12 @@ def on_message(client, userdata, message):
     try:
         if message.topic == "data/formatted/gear":
             # processing message to collect GearValue
-            rawMessage = str(message.payload.decode("utf-8")).split(':')
+            jsonMessage = json.loads(message.payload.decode("utf-8"))
+            currentGear = int(jsonMessage["value"])
             global GearValue
-            stringa = list(rawMessage[2])
-    
-            if GearValue != int(stringa[0]):
-                GearValue = int(stringa[0])
+            
+            if GearValue != currentGear:
+                GearValue = currentGear
                 binary = dec2binary(GearValue)
                 GPIOstateList = list(reversed(binary))   # generating a list that contains the future state that the BCDpins will have to assume
                 # print(binary)
