@@ -1,8 +1,8 @@
 #!/bin/env python3
 
 import json
+import time
 import paho.mqtt.client as mqtt  # import the client1
-
 import RPi.GPIO as GPIO
 
 # importing variables
@@ -34,36 +34,35 @@ GPIO.setup(dataLoggerSwitchPin, GPIO.IN)
 GPIO.setup(lapEndButton, GPIO.IN)
 
 
-global GearValue
-GearValue = 0
-global LapNumber
-LapNumber = 0
+def buttonInterrupt(self):  # function that reads buttons states
 
-
-# function that reads buttons states
-def buttonInterrupt(self):
     debugFlag = not GPIO.input(debugSwitchPin)
     telemetryFlag = not GPIO.input(telemetrySwitchPin)
     accelerationModeFlag = not GPIO.input(accelerationModeSwitchPin)
     dataLoggerFlag = not GPIO.input(dataLoggerSwitchPin)
 
-    # printing and publishing switches states
+    # processing, printing and publishing switches states
+    jsonDebugFlag = json.dumps({'time': time.time(), 'value': debugFlag})
+    jsonTelemetryFlag = json.dumps({'time': time.time(), 'value': telemetryFlag})
+    jsonAccelerationModeFlag = json.dumps({'time': time.time(), 'value': accelerationModeFlag})
+    jsonDataLoggerFlag = json.dumps({'time': time.time(), 'value': dataLoggerFlag})
 
-    client.publish("data/formatted/auto_acc_flag", accelerationModeFlag)
-    client.publish("data/formatted/debug_mode", debugFlag)
-    client.publish("data/formatted/datalog_on-off", dataLoggerFlag)
-    client.publish("data/formatted/telemetria_on-off", telemetryFlag)
+    client.publish("data/formatted/debug_mode", jsonDebugFlag)
+    client.publish("data/formatted/telemetria_on-off", jsonTelemetryFlag)
+    client.publish("data/formatted/auto_acc_flag", jsonAccelerationModeFlag)
+    client.publish("data/formatted/datalog_on-off", jsonDataLoggerFlag)
+
     # print("debug: ", debugFlag)
     # print("telemetry: ", telemetryFlag)
     # print("accellerationMode: ", accelerationModeFlag)
     # print("dataLogger: ", dataLoggerFlag)
 
 
-# function that increments lap number when lap button is pressed
-def lapEndButtonInterrupt(self):
+def lapEndButtonInterrupt(self):  # function that increments lap number when lap button is pressed
     global LapNumber
     LapNumber += 1
-    client.publish("data/formatted/lapnumber", LapNumber)
+    jsonLapNumber = json.dumps({'time': time.time(), 'value': LapNumber})
+    client.publish("data/formatted/lapnumber", jsonLapNumber)
     # print("lapNumber: ", LapNumber)
 
 
@@ -79,10 +78,8 @@ def dec2binary(dec):  # function used to convert decimal numbers to binary numbe
     binary = list(reversed(revBinary))
     return binary
 
-# function called when messages are received
 
-
-def on_message(client, userdata, message):
+def on_message(client, userdata, message):  # function called when messages are received
 
     # print(message.topic,"says: ",str(message.payload.decode("utf-8")))
     try:
@@ -109,23 +106,36 @@ def on_message(client, userdata, message):
         print("error")
 
 
-########################################
-    
+# MAIN FUNCTION START ##########################################
+
+global GearValue
+global LapNumber
+GearValue = 0
+LapNumber = 0
+
+debugFlag = not GPIO.input(debugSwitchPin)
+telemetryFlag = not GPIO.input(telemetrySwitchPin)
+accelerationModeFlag = not GPIO.input(accelerationModeSwitchPin)
+dataLoggerFlag = not GPIO.input(dataLoggerSwitchPin)
+
+# printing and publishing switches states
+jsonDebugFlag = json.dumps({'time': time.time(), 'value': debugFlag})
+jsonTelemetryFlag = json.dumps({'time': time.time(), 'value': telemetryFlag})
+jsonAccelerationModeFlag = json.dumps({'time': time.time(), 'value': accelerationModeFlag})
+jsonDataLoggerFlag = json.dumps({'time': time.time(), 'value': dataLoggerFlag})
+
+# MQTT SETUP #############################
 broker_address = "localhost"
-
 print("creating new instance")
-
 client = mqtt.Client("DashController") 
 client.on_message = on_message  # attach function to callback
-
 print("connecting to broker")
 client.connect(broker_address)  # connect to broker
 
-# SUBSCRIPTIONS
+# SUBSCRIPTIONS #################################
 
 # to subscribe just type:
 # client.subscribe("data/formatted/ <formatted data Channel-name> ")
-
 
 client.subscribe("data/formatted/gear")  # subscribing to Gear Channel
 # client.subscribe("data/formatted/auto_acc_flag")
@@ -134,6 +144,10 @@ client.subscribe("data/formatted/gear")  # subscribing to Gear Channel
 # client.subscribe("data/formatted/telemetria_on-off")
 # client.subscribe("data/formatted/lapnumber")
 client.publish("data/formatted/lapnumber", LapNumber)
+client.publish("data/formatted/debug_mode", jsonDebugFlag)
+client.publish("data/formatted/telemetria_on-off", jsonTelemetryFlag)
+client.publish("data/formatted/auto_acc_flag", jsonAccelerationModeFlag)
+client.publish("data/formatted/datalog_on-off", jsonDataLoggerFlag)
 
 # attaching interrupt functions
 GPIO.add_event_detect(debugSwitchPin, GPIO.BOTH, callback=buttonInterrupt, bouncetime=1)
