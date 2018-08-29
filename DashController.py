@@ -7,16 +7,16 @@ import RPi.GPIO as GPIO
 
 # importing variables
 
-debugSwitchPin = 5
-telemetrySwitchPin = 6
-accelerationModeSwitchPin = 26
-dataLoggerSwitchPin = 16
-lapEndButton = 10
-BCD0Pin = 23
-BCD1Pin = 17
-BCD2Pin = 27
-BCD3Pin = 22
-LE_Strobe_Pin = 2
+debugSwitchPin = 24
+telemetrySwitchPin = 23
+accelerationModeSwitchPin = 7
+dataLoggerSwitchPin = 14
+lapEndButton = 12
+BCD0Pin = 19
+BCD1Pin = 26
+BCD2Pin = 5
+BCD3Pin = 13
+LE_Strobe_Pin = 6
 
 
 # SETTING UP GPIOs
