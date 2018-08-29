@@ -1,4 +1,6 @@
 import paho.mqtt.client as mqtt  # import the client1
+import json
+
 
 global gear
 global debug
@@ -25,10 +27,9 @@ def on_message(client, userdata, message):
     global lapnum
 
     if message.topic == "data/formatted/gear":
-        rawMessage = str(message.payload.decode("utf-8")).split(':')
-        stringa = list(rawMessage[2])
-        gear = int(stringa[0])
-
+        jsonMessage = json.loads(message.payload.decode("utf-8"))
+        gear = int(jsonMessage['value'])
+        
     elif message.topic == "data/formatted/debug_mode":
         debug = str(message.payload.decode("utf-8"))
     elif message.topic == "data/formatted/auto_acc_flag":
