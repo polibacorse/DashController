@@ -31,15 +31,25 @@ def on_message(client, userdata, message):
         gear = int(jsonMessage['value'])
         
     elif message.topic == "data/formatted/debug_mode":
-        debug = str(message.payload.decode("utf-8"))
-    elif message.topic == "data/formatted/auto_acc_flag":
-        accmode = str(message.payload.decode("utf-8"))
+        jsonMessage = json.loads(message.payload.decode("utf-8"))
+        debug = jsonMessage['value']
+
     elif message.topic == "data/formatted/telemetria_on-off":
-        telemetry = str(message.payload.decode("utf-8"))
+        jsonMessage = json.loads(message.payload.decode("utf-8"))
+        telemetry = jsonMessage['value']
+
+    elif message.topic == "data/formatted/auto_acc_flag":
+        jsonMessage = json.loads(message.payload.decode("utf-8"))
+        accmode = jsonMessage['value']
+
     elif message.topic == "data/formatted/datalog_on-off":
-        datalog = str(message.payload.decode("utf-8"))
+        jsonMessage = json.loads(message.payload.decode("utf-8"))
+        datalog = jsonMessage['value']
+
     elif message.topic == "data/formatted/lapnumber":
-        lapnum = str(message.payload.decode("utf-8"))
+        jsonMessage = json.loads(message.payload.decode("utf-8"))
+        lapnum = jsonMessage['value']
+
     print()
     print()
     print()
