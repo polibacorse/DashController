@@ -85,6 +85,7 @@ def on_message(client, userdata, message):  # function called when messages are 
     try:
         if message.topic == "data/formatted/gear":
             # processing message to collect GearValue
+            # print(message.payload.decode("utf-8"))
             jsonMessage = json.loads(message.payload.decode("utf-8"))
             currentGear = int(jsonMessage["value"])
             global GearValue
@@ -112,6 +113,7 @@ global GearValue
 global LapNumber
 GearValue = 0
 LapNumber = 0
+
 
 debugFlag = not GPIO.input(debugSwitchPin)
 telemetryFlag = not GPIO.input(telemetrySwitchPin)
