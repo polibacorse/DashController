@@ -18,54 +18,55 @@ lapnum = 0
 
 
 def on_message(client, userdata, message):
+    try:
+        global gear
+        global debug
+        global telemetry
+        global accmode
+        global datalog
+        global lapnum
 
-    global gear
-    global debug
-    global telemetry
-    global accmode
-    global datalog
-    global lapnum
-
-    if message.topic == "data/formatted/gear":
-        jsonMessage = json.loads(message.payload.decode("utf-8"))
-        gear = int(jsonMessage['value'])
+        if message.topic == "data/formatted/gear":
+            jsonMessage = json.loads(message.payload.decode("utf-8"))
+            gear = int(jsonMessage['value'])
         
-    elif message.topic == "data/formatted/debug_mode":
-        jsonMessage = json.loads(message.payload.decode("utf-8"))
-        debug = jsonMessage['value']
+        elif message.topic == "data/formatted/debug_mode":
+            jsonMessage = json.loads(message.payload.decode("utf-8"))
+            debug = jsonMessage['value']
 
-    elif message.topic == "data/formatted/telemetria_on-off":
-        jsonMessage = json.loads(message.payload.decode("utf-8"))
-        telemetry = jsonMessage['value']
+        elif message.topic == "data/formatted/telemetria_on-off":
+            jsonMessage = json.loads(message.payload.decode("utf-8"))
+            telemetry = jsonMessage['value']
 
-    elif message.topic == "data/formatted/auto_acc_flag":
-        jsonMessage = json.loads(message.payload.decode("utf-8"))
-        accmode = jsonMessage['value']
+        elif message.topic == "data/formatted/auto_acc_flag":
+            jsonMessage = json.loads(message.payload.decode("utf-8"))
+            accmode = jsonMessage['value']
 
-    elif message.topic == "data/formatted/datalog_on-off":
-        jsonMessage = json.loads(message.payload.decode("utf-8"))
-        datalog = jsonMessage['value']
+        elif message.topic == "data/formatted/datalog_on-off":
+            jsonMessage = json.loads(message.payload.decode("utf-8"))
+            datalog = jsonMessage['value']
 
-    elif message.topic == "data/formatted/lapnumber":
-        jsonMessage = json.loads(message.payload.decode("utf-8"))
-        lapnum = jsonMessage['value']
+        elif message.topic == "data/formatted/lapnumber":
+            jsonMessage = json.loads(message.payload.decode("utf-8"))
+            lapnum = jsonMessage['value']
 
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print("############################################ ")
-    print()
-    print("gear : ", gear)
-    print("debug : ", debug)
-    print("telemetry : ", telemetry)
-    print("accmode : ", accmode)
-    print("datalog : ", datalog)
-    print("lapnumber : ", lapnum)
-
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print("############################################ ")
+        print()
+        print("gear : ", gear)
+        print("debug : ", debug)
+        print("telemetry : ", telemetry)
+        print("accmode : ", accmode)
+        print("datalog : ", datalog)
+        print("lapnumber : ", lapnum)
+    except:
+        print("error")
 
 ########################################
 
