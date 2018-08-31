@@ -12,3 +12,8 @@ Python script used as software interface for Dashboard hardware, in particular:
 A software that subscribes to DashController topics and shows a more readable output of DashController making easier the debugging
 [needs that DashController is in running mode]
 [needs that Mosquitto is in running mode]
+
+
+# gearSim
+A software that sends to the mqtt gears values in order to test DashController
+[needs that Mosquitto is in running mode]
