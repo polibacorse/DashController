@@ -11,7 +11,7 @@ client.loop_start()
 
 while True:
     for i in range(0, 10):
-        GearMessageDict = {'time': time.time(), 'value': i }
+        GearMessageDict = {'time': time.time()*1000, 'value': i }
         GearMessageJSON = json.dumps(GearMessageDict)
         client.publish("data/formatted/gear", GearMessageJSON)
         print(GearMessageJSON)
