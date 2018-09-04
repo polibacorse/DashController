@@ -42,10 +42,10 @@ def buttonInterrupt(self):  # function that reads buttons states
     dataLoggerFlag = not GPIO.input(dataLoggerSwitchPin)
 
     # processing, printing and publishing switches states
-    jsonDebugFlag = json.dumps({'time': time.time(), 'value': debugFlag})
-    jsonTelemetryFlag = json.dumps({'time': time.time(), 'value': telemetryFlag})
-    jsonAccelerationModeFlag = json.dumps({'time': time.time(), 'value': accelerationModeFlag})
-    jsonDataLoggerFlag = json.dumps({'time': time.time(), 'value': dataLoggerFlag})
+    jsonDebugFlag = json.dumps({'time': time.time()*1000, 'value': debugFlag})
+    jsonTelemetryFlag = json.dumps({'time': time.time()*1000, 'value': telemetryFlag})
+    jsonAccelerationModeFlag = json.dumps({'time': time.time()*1000, 'value': accelerationModeFlag})
+    jsonDataLoggerFlag = json.dumps({'time': time.time()*1000, 'value': dataLoggerFlag})
 
     client.publish("data/formatted/debug_mode", jsonDebugFlag)
     client.publish("data/formatted/telemetria_on-off", jsonTelemetryFlag)
@@ -61,7 +61,7 @@ def buttonInterrupt(self):  # function that reads buttons states
 def lapEndButtonInterrupt(self):  # function that increments lap number when lap button is pressed
     global LapNumber
     LapNumber += 1
-    jsonLapNumber = json.dumps({'time': time.time(), 'value': LapNumber})
+    jsonLapNumber = json.dumps({'time': time.time()*1000, 'value': LapNumber})
     client.publish("data/formatted/lapnumber", jsonLapNumber)
     # print("lapNumber: ", LapNumber)
 
