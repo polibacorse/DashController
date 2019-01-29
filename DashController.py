@@ -32,7 +32,7 @@ GPIO.setup(telemetrySwitchPin, GPIO.IN)
 GPIO.setup(accelerationModeSwitchPin, GPIO.IN)
 GPIO.setup(dataLoggerSwitchPin, GPIO.IN)
 GPIO.setup(lapEndButton, GPIO.IN)
-
+print("DashController Attivo")
 
 def buttonInterrupt(self):  # function that reads buttons states
 
@@ -94,7 +94,7 @@ def on_message(client, userdata, message):  # function called when messages are 
                 GearValue = currentGear
                 binary = dec2binary(GearValue)
                 GPIOstateList = list(reversed(binary))   # generating a list that contains the future state that the BCDpins will have to assume
-                # print(binary)
+                print(binary)
                 # updating GPIO state
                 GPIO.output(LE_Strobe_Pin, 0)
                 GPIO.output(BCD0Pin, GPIOstateList[0])
